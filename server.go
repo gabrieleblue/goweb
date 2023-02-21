@@ -53,11 +53,13 @@ func main() {
 
 	// public HTML route middleware stack
 	publicHTMLStack := []middlewares.Middleware{
+		middlewares.SessionHanler,
 		middlewares.Logger,
 	}
 
 	// private JSON route middleware stack
 	privateJSONStack := []middlewares.Middleware{
+		middlewares.SessionHanler,
 		middlewares.Logger,
 		middlewares.VerifyToken,
 	}

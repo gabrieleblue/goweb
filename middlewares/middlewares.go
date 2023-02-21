@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/gorilla/sessions"
 )
 
 var hmacSampleSecret = []byte("someSecret") // TODO: put this key in safe place and use proper secret
@@ -73,5 +74,33 @@ func VerifyToken(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		next.ServeHTTP(w, r)
+	})
+}
+
+var store = sessions.NewCookieStore([]byte("secret-key"))
+
+func SessionHanler(next http.HandlerFunc) http.HandlerFunc {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Get the session for the current request
+		session, err := store.Get(r, "session-name")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Set a value in the session
+		session.Values["foo"] = "bar"
+		session.Save(r, w)
+
+		// Retrieve a value from the session
+		foo, ok := session.Values["foo"].(string)
+		if !ok {
+			http.Error(w, "Failed to retrieve value from session", http.StatusInternalServerError)
+			return
+		}
+		fmt.Println("Session valie", foo)
+		next.ServeHTTP(w, r)
+		fmt.Println("Session Middleware Completed")
 	})
 }

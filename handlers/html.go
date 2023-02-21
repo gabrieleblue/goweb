@@ -7,7 +7,11 @@ import (
 	"main/config"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/sessions"
 )
+
+var store = sessions.NewCookieStore([]byte("secret-key"))
 
 var Tmpl *template.Template
 
