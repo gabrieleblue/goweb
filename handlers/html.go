@@ -54,3 +54,16 @@ func Islands(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func LoginForm(w http.ResponseWriter, r *http.Request) {
+	envConfig := config.EnvConfig()
+	if err := Tmpl.ExecuteTemplate(w, "login", map[string]interface{}{
+		"Title":       "Login",
+		"Importmaps":  envConfig.Importmaps,
+		"Development": os.Getenv("GO_WEB_ENV") == "development",
+	}); err != nil {
+		fmt.Printf("ERR: %v\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
