@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -90,16 +91,18 @@ func SessionHanler(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// Set a value in the session
-		session.Values["foo"] = "bar"
-		session.Save(r, w)
+		// TO CHANGE WITH USEFUL DATA
+		cart, ok := session.Values["cart"]
+		// fmt.Println("is it ok?", cart, ok)
 
-		// Retrieve a value from the session
-		foo, ok := session.Values["foo"].(string)
 		if !ok {
-			http.Error(w, "Failed to retrieve value from session", http.StatusInternalServerError)
-			return
+			session.Values["cart"] = rand.Intn(100)
+			session.Save(r, w)
+		} else {
+
 		}
-		fmt.Println("Session valie", foo)
+
+		fmt.Println("Session value", cart)
 		next.ServeHTTP(w, r)
 		fmt.Println("Session Middleware Completed")
 	})
